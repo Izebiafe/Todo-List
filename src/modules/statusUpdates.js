@@ -1,4 +1,5 @@
-import UI from './ui';
+import UI from './ui.js';
+
 const ul = document.querySelector('.ul');
 const handleStatusUpdate = () => {
   ul.addEventListener('change', (e) => {
