@@ -90,7 +90,7 @@ That's it! With these simple steps, you should be able to get up and running wit
 
 ### Usage
 
-To create a new task, simply enter the task name and description in the text fields and click on the "Create Task" button.
+To create a new task, simply enter the task name and description in the text fields and click on the "Create Task." button.
 
 To mark a task as completed, simply click on the "Mark as Completed" checkbox next to the task.
 
