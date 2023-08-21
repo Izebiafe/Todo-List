@@ -29,18 +29,15 @@ export default class UI {
     list.className = newTodo.index;
     const div = document.createElement('div');
     div.className = 'divn';
-
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.id = newTodo.index;
     checkbox.className = 'check';
-
     const input = document.createElement('input');
     input.type = 'text';
     input.id = newTodo.index;
     input.className = 'edit';
     input.value = newTodo.description;
-
     if (newTodo.completed === true) {
       input.classList.add('completed');
       checkbox.checked = true;
@@ -48,32 +45,25 @@ export default class UI {
       input.classList.remove('completed');
       checkbox.checked = false;
     }
-
     const ellipsisIcon = document.createElement('i');
     ellipsisIcon.id = 'bar';
     ellipsisIcon.className = 'fas fa-ellipsis-v';
-
     const trashIcon = document.createElement('i');
     trashIcon.id = 'remove';
     trashIcon.className = 'fas fa-trash-alt hidden';
-
     div.appendChild(checkbox);
     div.appendChild(input);
-
     list.appendChild(div);
     list.appendChild(ellipsisIcon);
     list.appendChild(trashIcon);
     ul.appendChild(list);
-
     const newInput = list.querySelector('.edit');
     newInput.addEventListener('input', () => {
       // Update the description of the task
       newTodo.description = newInput.value;
-
       // Update the task in the localStorage
       UI.updateTaskInLocalStorage(newTodo.index, newTodo);
     });
-
     newInput.addEventListener('focusin', () => {
       const allListItems = document.querySelectorAll('.ul li');
       allListItems.forEach((item) => {
@@ -85,14 +75,12 @@ export default class UI {
           ellipsisIcon.classList.add('hidden');
         }
       });
-
       // Check if the 'active' class is removed
       if (list.classList.contains('active')) {
         trashIcon.classList.remove('hidden');
         ellipsisIcon.classList.add('hidden');
       }
     });
-
     newInput.addEventListener('focusout', () => {
       const allListItems = document.querySelectorAll('.ul li');
       allListItems.forEach((item) => {
@@ -105,13 +93,11 @@ export default class UI {
         }
       });
     });
-
     // Add event listener to check if completed === true
     const checkboxI = list.querySelector('.check');
     checkboxI.addEventListener('change', () => {
       // Update the status of the task
       newTodo.completed = !newTodo.completed;
-
       if (newTodo.completed === true) {
         input.classList.add('completed');
         checkbox.checked = true;
@@ -119,15 +105,14 @@ export default class UI {
         input.classList.remove('completed');
         checkbox.checked = false;
       }
+      // Update the task in the localStorage
+      UI.updateTaskInLocalStorage(newTodo.index, newTodo);
     });
-
     // Add event listener to delete icon
     trashIcon.addEventListener('click', () => {
       const taskId = newTodo.index;
-
       // Remove the task from the UI
       ul.removeChild(list);
-
       // Remove the task from the localStorage
       UI.deleteTaskFromLocalStorage(taskId);
     });
@@ -151,23 +136,33 @@ export default class UI {
 
   static deleteTaskFromLocalStorage(taskId) {
     const ui = new UI();
-    const todoData = UI.getItem();
-    const taskIndex = todoData.findIndex((todo) => todo.index === taskId);
-    if (taskIndex !== -1) {
-      todoData.splice(taskIndex, 1);
-      localStorage.setItem('todoData', JSON.stringify(todoData));
-    }
+    let todoData = UI.getItem();
+    // Filter out the task to be deleted and update the index of remaining tasks
+    todoData = todoData.filter((todo) => todo.index !== taskId).map((todo, index) => {
+      todo.index = index + 1;
+      return todo;
+    });
+    // Update the localStorage with the updated todoData
+    localStorage.setItem('todoData', JSON.stringify(todoData));
     ui.errorMsg('Success', 'rgba(9, 186, 9, 0.5)');
   }
 
   static clearCompletedTasks() {
     const ui = new UI();
+    let todoData = UI.getItem();
+    // Filter out completed tasks and update the index of remaining tasks
+    todoData = todoData.filter((todo) => !todo.completed).map((todo, index) => {
+      todo.index = index + 1;
+      return todo;
+    });
+    // Update the localStorage with the incomplete tasks
+    localStorage.setItem('todoData', JSON.stringify(todoData));
+    // Remove completed tasks from the UI
     const completedTasks = document.querySelectorAll('.completed');
     completedTasks.forEach((task) => {
       const listItem = task.closest('li');
       listItem.parentNode.removeChild(listItem);
     });
-
     ui.errorMsg('Success', 'rgba(9, 186, 9, 0.5)');
   }
 
